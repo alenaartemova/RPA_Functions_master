@@ -2,9 +2,9 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace rpa_functions.rpa_pc243
+   
 {
     public static class HtmlTemplate
     {
@@ -15,11 +15,7 @@ namespace rpa_functions.rpa_pc243
             string htmlHead = gethtmlhead(materialDeliveries[0].vendor_name, materialDeliveries[0].webguid);
             string htmlTable = "";
 
-            List<MaterialDeliveryEntity> materialDeliveriesSorted = materialDeliveries.OrderBy(p => p.po).ToList();
-            
-
-
-            foreach (MaterialDeliveryEntity ent in materialDeliveriesSorted)
+            foreach (MaterialDeliveryEntity ent in materialDeliveries)
             {
                 string tableLine = $@"
                                     <tr>
@@ -32,12 +28,18 @@ namespace rpa_functions.rpa_pc243
                                     <td>{ent.order_qty}</td>
                                     <td>{ent.order_unit}</td>
                                     <td>{ent.delivery_date}</td>
-                                    <td>
-                                    <input class=delivery type=radio name=delivery_{ent.id} id=delivery_yes_{ent.id} checked value=yes>Yes<br>
-                                    <input class=delivery type=radio name=delivery_{ent.id} id=delivery_no_{ent.id} value=no>No<br>
+                                    <td class=checkboxes>
+                                    <label class = container>Yes
+                                        <input class=delivery type=radio name=delivery_{ent.id} id=delivery_yes_{ent.id} checked value=yes><br>
+                                        <span class = checkmark></span>
+                                    </label>
+                                    <label class = container>No
+                                        <input class=delivery type=radio name=delivery_{ent.id} id=delivery_no_{ent.id} value=no><br>
+                                        <span class = checkmark></span>
+                                    </label>
                                     </td>
                                     <td>
-                                    <input class=deliverydate name=deliverydate_{ent.id} disabled type=text id=deliverydate_{ent.id}>
+                                    <input class=deliverydate name=deliverydate_{ent.id} type=date id=deliverydate_{ent.id}>
                                     </td>
                                     <td>
                                     <input class=trackingnr name=trackingnr_{ent.id} input=text id=trackingnr_{ent.id}>
@@ -48,7 +50,10 @@ namespace rpa_functions.rpa_pc243
                                     <td>
                                     <button class=submit id=button_{ent.id} type=button>Submit</button>
                                     </td>
-                                    </tr>";
+                                    </tr>
+                                    ";
+                                                                      
+               
 
                 htmlTable = htmlTable + tableLine;
             }
@@ -62,15 +67,149 @@ namespace rpa_functions.rpa_pc243
 
             string retVal = $@"
                             <html>
-                            <title>Equinor Material Delivery feedback</title>
+                            <head>
+                            <title>Equinor Material Delivery feedback</title> 
                             <script src=https://code.jquery.com/jquery-3.4.1.js integrity=sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU= crossorigin=anonymous></script>
+                            <style>
+                                
+                                h3 {{
+                                    padding: 3px 6px;
+                                    color: #1C6EA4;
+                                }}
+
+                                table {{
+                                    border: 1px solid #1852AE;
+                                    background-color: #EEEEEE;
+                                    width: 100%;
+                                    text-align: left; 
+                                    table-layout: fixed;
+                                }}
+                                
+                                td, th {{
+                                    border: 1px solid #AAAAAA;
+                                    padding: 3px 2px;
+                                }}
+
+                                td {{
+                                    word-wrap: break-word;
+                                    font - size: 13px;
+                                    padding-left: 5px;
+                                }}
+                                
+                                .checkboxes {{
+                                    padding-top: 10px;
+                                }}
+
+                                thead {{
+                                    background: #1C6EA4;
+                                    background: -moz-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+                                    background: -webkit-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+                                    background: linear-gradient(to bottom, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+                                    border-bottom: 2px solid #444444;
+                                }}
+    
+                                thead th {{
+                                    font-size: 15px;
+                                    font-weight: bold;
+                                    color: #FFFFFF;
+                                    text-align: center;
+                                    border-left: 2px solid #D0E4F5;
+                                }}
+                                
+                                thead th:first-child {{
+                                    border-left: none;
+                                }}
+                            
+                                tfoot td {{
+                                    font-size: 14px;
+                                }}
+
+                                input {{
+                                    border: none;
+                                    background-color: transparent;
+                                }}
+                                
+                                .submit {{
+                                    margin: auto;
+                                    display: block;
+                                    border-radius: 10%;
+                                    font-weight: bold;
+                                    background: #1C6EA4;
+                                    color: #FFFFFF;
+                                    padding: 6px 16px;
+                                    border: 2px solid #1C6EA4;
+                                }}
+
+                                .submit:hover {{
+                                    background-color: #D0E4F5;
+                                    border: 2px solid #D0E4F5;
+                                }}
+                    
+                                .container {{
+                                      display: block;
+                                      position: relative;
+                                      padding-left: 25px;
+                                      margin-bottom: 12px;
+                                      cursor: pointer;
+                                      font-size: 16px;
+                                      -webkit-user-select: none;
+                                      -moz-user-select: none;
+                                      -ms-user-select: none;
+                                      user-select: none;
+                                }}
+
+                                .container input {{
+                                      padding-top: 10px;
+                                      position: absolute;
+                                      opacity: 0;
+                                      cursor: pointer;
+                                      height: 0;
+                                      width: 0;
+                                }}
+
+                                .checkmark {{
+                                      position: absolute;
+                                      top: 0;
+                                      left: 0;
+                                      height: 18px;
+                                      width: 18px;
+                                      background-color: #D0E4F5;
+                                      border-radius: 50%;
+                                }}
+
+                                .container:hover input ~ .checkmark {{
+                                      background - color: #ccc;
+                                }}
+
+                                .container input:checked ~ .checkmark {{
+                                    background-color: #1C6EA4;
+                                }}
+
+                                .checkmark:after {{
+                                      content: "";
+                                      position: absolute;
+                                      display: none;
+                                }}
+
+                                .container input:checked ~ .checkmark:after {{
+                                      display: block;
+                                }}
+                                
+                                .submitallbtn {{
+                                    float: right;
+                                    padding-right: 2px;
+                                }}                            
+
+                            </style>
                             </head>
                             <body>
                             <h3>{vendor_name}</h3>
                             <input type=hidden id=webid value={webguid}>
                             <br>
-                            <table border=1>
+                           
+                            <table>
                             <tr>
+                            <thead>
                             <th>Vendor No</th>
                             <th>Vendor Name</th>
                             <th>PO</th>
@@ -85,12 +224,17 @@ namespace rpa_functions.rpa_pc243
                             <th>Tracking nr</th>
                             <th>Freight forwarder</th>
                             <th>Submit</th>
-                            </tr>";
+                            </thead>
+                            </tr>
+                            ";
             return retVal;
         }
 
         private const string htmltail = @"</table>
                                           <br>
+                                          <div class=submitallbtn>
+                                            <button class=submit id=buttonsubmitall type=button>Submit All</button>
+                                          </div>
                                           <script>
                                             $('.delivery').click(function() {
                                               var id = this.id.split('_')[2];
@@ -206,9 +350,9 @@ namespace rpa_functions.rpa_pc243
         public string shorttext { get; set; }
         public string order_qty { get; set; }
         public string order_unit { get; set; }
-        public DateTime delivery_date { get; set; } 
+        public DateTime delivery_date { get; set; }
         public string delivered_ondate { get; set; }
-        public DateTime? new_delivery_date { get; set; }
+        public DateTime new_delivery_date { get; set; }
         public string tracking_nr { get; set; }
         public string freight_name { get; set; }
         public int status { get; set; } = 0;
@@ -226,7 +370,7 @@ namespace rpa_functions.rpa_pc243
         public string order_unit { get; set; }
         public DateTime delivery_date { get; set; }
         public string delivered_ondate { get; set; }
-        public DateTime? new_delivery_date { get; set; }
+        public DateTime new_delivery_date { get; set; }
         public string tracking_nr { get; set; }
         public string freight_name { get; set; }
         public int status { get; set; }
@@ -322,7 +466,7 @@ namespace rpa_functions.rpa_pc243
             returnEntity.shorttext = bodyData.shorttext;
             returnEntity.order_qty = bodyData.order_qty;
             returnEntity.order_unit = bodyData.order_unit;
-            if (Convert.ToString(bodyData.delivery_date) != "") returnEntity.delivery_date = DateTime.Parse(Convert.ToString(bodyData.delivery_date));
+            if (Convert.ToString(bodyData.delivery_date) != "") returnEntity.delivery_date = DateTime.Parse(Convert.ToString(bodyData.delivery_date)); //parseexact?
 
             return returnEntity;
 
@@ -335,7 +479,7 @@ namespace rpa_functions.rpa_pc243
 
 
             returnEntity.delivered_ondate = bodyData.delivered_ondate;
-            if (Convert.ToString(bodyData.new_delivery_date) != "") returnEntity.new_delivery_date = DateTime.Parse(Convert.ToString(bodyData.new_delivery_date));
+            if (Convert.ToString(bodyData.new_delivery_date) != "") returnEntity.new_delivery_date = DateTime.Parse(Convert.ToString(bodyData.new_delivery_date)); //this?
             returnEntity.tracking_nr = bodyData.tracking_nr;
             returnEntity.freight_name = bodyData.freight_name;
 
@@ -355,8 +499,6 @@ namespace rpa_functions.rpa_pc243
 
             return materialDelivery;
         }
-
-    
 
         // Convert List of MaterialDeliveryTableEntities to JSON
         public static string toMaterialDeliveryJSON(List<MaterialDeliveryTableEntity> materialDeliveryEntities)
