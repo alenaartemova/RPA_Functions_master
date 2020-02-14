@@ -127,6 +127,7 @@ namespace rpa_functions.rpa_pc243
                                 input {{
                                     border: none;
                                     background-color: transparent;
+                                    width: 100%;
                                 }}
                                 
                                 .submit {{
@@ -187,7 +188,11 @@ namespace rpa_functions.rpa_pc243
 
                                 .checkmark:after {{
                                       content: "";
+                                      width: 10px;
+                                      height: 10px;
                                       position: absolute;
+                                      top: 5px;
+                                      left: 5px;
                                       display: none;
                                 }}
 
@@ -195,10 +200,24 @@ namespace rpa_functions.rpa_pc243
                                       display: block;
                                 }}
                                 
-                                .submitallbtn {{
+                                .buttonsubmitall {{
                                     float: right;
                                     padding-right: 2px;
-                                }}                            
+                                    margin: auto;
+                                    display: block;
+                                    width: auto;
+                                    border-radius: 10%;
+                                    font-weight: bold;
+                                    background: #1C6EA4;
+                                    color: #FFFFFF;
+                                    padding: 6px 16px;
+                                    border: 2px solid #1C6EA4;
+                                }} 
+
+                                .buttonsubmitall:hover {{
+                                    background-color: #D0E4F5;
+                                    border: 2px solid #D0E4F5;
+                                }}
 
                             </style>
                             </head>
@@ -233,7 +252,7 @@ namespace rpa_functions.rpa_pc243
         private const string htmltail = @"</table>
                                           <br>
                                           <div class=submitallbtn>
-                                            <button class=submit id=buttonsubmitall type=button>Submit All</button>
+                                            <button class=buttonsubmitall id=buttonsubmitall type=button>Submit All</button>
                                           </div>
                                           <script>
                                             $('.delivery').click(function() {
@@ -249,6 +268,37 @@ namespace rpa_functions.rpa_pc243
                                                 $('#freight_' + id).prop('disabled', true);
                                                 $('#deliverydate_' + id).prop('disabled', false);
                                               }
+                                            });
+
+                                            $('#buttonsubmitall').click(function() {
+                                                var tableRows = $('table')[0].rows;
+                                                var dateRegExp = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/
+
+                                                for (i = 2; i < tableRows.length; i++) {
+                                                    var id = tableRows[i].cells[13].childNodes[1].id.split('_')[1];
+                                                    if ($('#delivery_no_' + id).prop('checked')) {
+                                                        var deliveryDate = $('#deliverydate_' + id).val();
+
+                                                        if (dateRegExp.test(deliveryDate)) {
+                                                          // Send with date
+                                                          $('#deliverydate_' + id).css({
+                                                            'color': 'black'
+                                                          });
+                                                          $('#button_' + id).prop('disabled', true);
+                                                        } else {
+                                                          // Not valid date, make user correct it
+                                                          $('#deliverydate_' + id).css({
+                                                            'color': 'red'
+                                                          });
+                                                          alert('date not valid - NO SEND');
+                                                        }
+                                                    } else {
+                                                        // Send without date
+                                                        $('#deliverydate_' + id).val('');
+                                                        $('#button_' + id).prop('disabled', true);
+                                                        makehttp(id, true);
+                                                    }
+                                                 }
                                             });
 
                                             $('.submit').click(function() {
@@ -289,7 +339,7 @@ namespace rpa_functions.rpa_pc243
                                               'freight_name': ''
                                             };
 
-                                            function makehttp(id, ontime) {
+                                            function makehttp (id, ontime) {
                                             var webid = $('#webid').val();
                                             var guid = id;
 
@@ -306,6 +356,7 @@ namespace rpa_functions.rpa_pc243
                                               materialDeliveryData.freight_name = $('#freight_' + id).val();
 
 
+                                             
                                               $.ajax({
                                                 url: urlmaterial,
                                                 data: JSON.stringify(materialDeliveryData), //ur data to be sent to server
@@ -479,7 +530,7 @@ namespace rpa_functions.rpa_pc243
 
 
             returnEntity.delivered_ondate = bodyData.delivered_ondate;
-            if (Convert.ToString(bodyData.new_delivery_date) != "") returnEntity.new_delivery_date = DateTime.Parse(Convert.ToString(bodyData.new_delivery_date)); //this?
+            if (Convert.ToString(bodyData.new_delivery_date) != "") returnEntity.new_delivery_date = DateTime.Parse(Convert.ToString(bodyData.new_delivery_date)); 
             returnEntity.tracking_nr = bodyData.tracking_nr;
             returnEntity.freight_name = bodyData.freight_name;
 
