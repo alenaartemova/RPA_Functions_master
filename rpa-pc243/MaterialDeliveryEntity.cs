@@ -15,7 +15,7 @@ namespace rpa_functions.rpa_pc243
             string htmlHead = gethtmlhead(materialDeliveries[0].vendor_name, materialDeliveries[0].webguid);
             string htmlTable = "";
 
-            foreach (MaterialDeliveryEntity ent in materialDeliveries)
+            foreach (MaterialDeliveryEntity ent in materialDeliveries) 
             {
                 string tableLine = $@"
                                     <tr>
@@ -27,7 +27,7 @@ namespace rpa_functions.rpa_pc243
                                     <td>{ent.shorttext}</td>
                                     <td>{ent.order_qty}</td>
                                     <td>{ent.order_unit}</td>
-                                    <td>{ent.delivery_date}</td>
+                                    <td>{Convert.ToString(ent.delivery_date).Substring(0, Convert.ToString(ent.delivery_date).IndexOf(" "))}</td>
                                     <td class=checkboxes>
                                     <label class = container>Yes
                                         <input class=delivery type=radio name=delivery_{ent.id} id=delivery_yes_{ent.id} checked value=yes><br>
@@ -39,13 +39,13 @@ namespace rpa_functions.rpa_pc243
                                     </label>
                                     </td>
                                     <td>
-                                    <input class=deliverydate name=deliverydate_{ent.id} type=date id=deliverydate_{ent.id}>
+                                    <input class=deliverydate name=deliverydate_{ent.id} type=date id=deliverydate_{ent.id} disabled=true>
                                     </td>
                                     <td>
-                                    <input class=trackingnr name=trackingnr_{ent.id} input=text id=trackingnr_{ent.id}>
+                                    <input class=trackingnr name=trackingnr_{ent.id} input=text id=trackingnr_{ent.id} placeholder = ""Type the value"">
                                     </td>
                                     <td>
-                                    <input class=freight name=freight_{ent.id} input=text id=freight_{ent.id}>
+                                    <input class=freight name=freight_{ent.id} input=text id=freight_{ent.id} placeholder = ""Type the value"">
                                     </td>
                                     <td>
                                     <button class=submit id=button_{ent.id} type=button>Submit</button>
@@ -219,6 +219,12 @@ namespace rpa_functions.rpa_pc243
                                     border: 2px solid #D0E4F5;
                                 }}
 
+                                ::placeholder {{
+                                    text-align: center;
+                                    
+                                }}
+
+
                             </style>
                             </head>
                             <body>
@@ -255,17 +261,28 @@ namespace rpa_functions.rpa_pc243
                                             <button class=buttonsubmitall id=buttonsubmitall type=button>Submit All</button>
                                           </div>
                                           <script>
+
                                             $('.delivery').click(function() {
                                               var id = this.id.split('_')[2];
                                               var action = this.id.split('_')[1];
 
+
                                               if (action == 'yes') {
                                                 $('#trackingnr_' + id).prop('disabled', false);
+                                                $('#trackingnr_' + id).prop('placeholder', 'Type the value');
+
                                                 $('#freight_' + id).prop('disabled', false);
+                                                $('#freight_' + id).prop('placeholder', 'Type the value');
+
                                                 $('#deliverydate_' + id).prop('disabled', true);
+
                                               } else if (action == 'no') {
+                                                $('#trackingnr_' + id).prop('placeholder', '');
                                                 $('#trackingnr_' + id).prop('disabled', true);
+
                                                 $('#freight_' + id).prop('disabled', true);
+                                                $('#freight_' + id).prop('placeholder', '');
+
                                                 $('#deliverydate_' + id).prop('disabled', false);
                                               }
                                             });
@@ -273,18 +290,17 @@ namespace rpa_functions.rpa_pc243
                                             $('#buttonsubmitall').click(function() {
                                                 var tableRows = $('table')[0].rows;
                                                 var dateRegExp = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/
-
                                                 for (i = 2; i < tableRows.length; i++) {
                                                     var id = tableRows[i].cells[13].childNodes[1].id.split('_')[1];
                                                     if ($('#delivery_no_' + id).prop('checked')) {
                                                         var deliveryDate = $('#deliverydate_' + id).val();
-
                                                         if (dateRegExp.test(deliveryDate)) {
                                                           // Send with date
                                                           $('#deliverydate_' + id).css({
                                                             'color': 'black'
                                                           });
                                                           $('#button_' + id).prop('disabled', true);
+                                                          makehttp(id, true);
                                                         } else {
                                                           // Not valid date, make user correct it
                                                           $('#deliverydate_' + id).css({
@@ -298,8 +314,10 @@ namespace rpa_functions.rpa_pc243
                                                         $('#button_' + id).prop('disabled', true);
                                                         makehttp(id, true);
                                                     }
+                                                    
                                                  }
                                             });
+                                                
 
                                             $('.submit').click(function() {
                                               var id = this.id.split('_')[1];
@@ -308,6 +326,7 @@ namespace rpa_functions.rpa_pc243
                                               //alert(dateRegExp.test('22/01/1981'));
                                               if ($('#delivery_no_' + id).prop('checked')) {
                                                 var deliveryDate = $('#deliverydate_' + id).val();
+                                                
 
                                                 if (dateRegExp.test(deliveryDate)) {
                                                   // Send with date
@@ -354,6 +373,7 @@ namespace rpa_functions.rpa_pc243
                                               materialDeliveryData.new_delivery_date = $('#deliverydate_' + id).val();
                                               materialDeliveryData.tracking_nr = $('#trackingnr_' + id).val();
                                               materialDeliveryData.freight_name = $('#freight_' + id).val();
+                                              console.log(materialDeliveryData);
 
 
                                              
