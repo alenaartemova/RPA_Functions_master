@@ -280,6 +280,7 @@ namespace rpa_functions.rpa_pc243
                                             });
 
                                             $('#buttonsubmitall').click(function() {
+                
                                                 var tableRows = $('table')[0].rows;
                                                 //var dateRegExp = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/
                                                 var dateRegExp = /^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d|([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$/
@@ -287,6 +288,10 @@ namespace rpa_functions.rpa_pc243
 
                                                 for (i = 2; i < tableRows.length; i++) {
                                                     var id = tableRows[i].cells[13].childNodes[1].id.split('_')[1];
+
+                                                    //Disable Each Submit Button
+                                                        disableSubmit(id);
+
                                                     if ($('#delivery_no_' + id).prop('checked')) {
                                                         var deliveryDate = $('#deliverydate_' + id).val();
                                                         if (dateRegExp.test(deliveryDate)) {
@@ -294,7 +299,8 @@ namespace rpa_functions.rpa_pc243
                                                           $('#deliverydate_' + id).css({
                                                             'color': 'black'
                                                           });
-                                                          $('#button_' + id).prop('disabled', true);
+                                                          disableSubmitAll();
+
                                                           makehttp(id, true);
                                                         } else {
                                                           // Not valid date, make user correct it
@@ -306,7 +312,8 @@ namespace rpa_functions.rpa_pc243
                                                     } else {
                                                         // Send without date
                                                         $('#deliverydate_' + id).val('');
-                                                        $('#button_' + id).prop('disabled', true);
+                                                        disableSubmitAll();
+
                                                         makehttp(id, true);
                                                     }
                                                     
@@ -315,6 +322,10 @@ namespace rpa_functions.rpa_pc243
                                                 
 
                                             $('.submit').click(function() {
+
+                                            // Disable Submit All button
+                                              disableSubmitAll();
+
                                               var id = this.id.split('_')[1];
                                               //var dateRegExp = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/
                                               var dateRegExp = /^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d|([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$/
@@ -328,7 +339,8 @@ namespace rpa_functions.rpa_pc243
                                                   $('#deliverydate_' + id).css({
                                                     'color': 'black'
                                                   });
-                                                  $('#button_' + id).prop('disabled', true);
+                                                  disableSubmit(id);
+
                                                 } else {
                                                   // Not valid date, make user correct it
                                                   $('#deliverydate_' + id).css({
@@ -339,10 +351,33 @@ namespace rpa_functions.rpa_pc243
                                               } else {
                                                 // Send without date
                                                 $('#deliverydate_' + id).val('');
-                                                $('#button_' + id).prop('disabled', true);
+                                                
+                                                disableSubmit(id);
+
                                                 makehttp(id, true);
                                               }
                                             });
+
+                                            function disableSubmit (id) {
+                                                $('#button_' + id).prop('disabled', true);
+                                                $('#button_' + id).css({
+                                                            'background': '#D0E4F5'
+                                                          });
+                                                $('#button_' + id).css({
+                                                            'border': 'none'
+                                                          });
+                                            }
+
+                                            function disableSubmitAll () {
+                                                $('#buttonsubmitall').prop('disabled', true);
+                                                          $('#buttonsubmitall').css({
+                                                            'background': '#D0E4F5'
+                                                          });
+                                                          
+                                                          $('#buttonsubmitall').css({
+                                                            'border': 'none'
+                                                          });
+                                            }
 
                                             var apiurl = 'http://localhost:7071/api/PC243_PostMaterialDeliveryUpdate/';
 
@@ -372,18 +407,18 @@ namespace rpa_functions.rpa_pc243
 
 
                                              
-                                              $.ajax({
-                                                url: urlmaterial,
-                                                data: JSON.stringify(materialDeliveryData), //ur data to be sent to server
-                                                contentType: 'application/json',
-                                                dataType: 'json',
-                                                type: 'PATCH',
-                                                success: function(data) {
-                                                },
-                                                error: function(xhr, ajaxOptions, thrownError) {
-                                                  alert('Failed:  '+ thrownError+xhr.responseText + '   ' + xhr.status);
-                                                }
-                                              });
+                                              //$.ajax({
+                                                //url: urlmaterial,
+                                                //data: JSON.stringify(materialDeliveryData), //ur data to be sent to server
+                                                //contentType: 'application/json',
+                                                //dataType: 'json',
+                                                //type: 'PATCH',
+                                                //success: function(data) {
+                                                //},
+                                                //error: function(xhr, ajaxOptions, thrownError) {
+                                                  //alert('Failed:  '+ thrownError+xhr.responseText + '   ' + xhr.status);
+                                                //}
+                                              //});
                                             }
 
                                           </script>
