@@ -72,7 +72,7 @@ namespace rpa_functions.rpa_pc243
                             <script src=https://code.jquery.com/jquery-3.4.1.js integrity=sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU= crossorigin=anonymous></script>
                             <style>
                                 
-                                h3 {{
+                                h3, p {{
                                     padding: 3px 6px;
                                     color: #1C6EA4;
                                 }}
@@ -231,7 +231,8 @@ namespace rpa_functions.rpa_pc243
                             <h3>{vendor_name}</h3>
                             <input type=hidden id=webid value={webguid}>
                             <br>
-                           
+                            <p>Please update the list and press Submit or Submit All individually</p>
+                            <br>
                             <table>
                             <tr>
                             <thead>
@@ -407,18 +408,18 @@ namespace rpa_functions.rpa_pc243
 
 
                                              
-                                              //$.ajax({
-                                                //url: urlmaterial,
-                                                //data: JSON.stringify(materialDeliveryData), //ur data to be sent to server
-                                                //contentType: 'application/json',
-                                                //dataType: 'json',
-                                                //type: 'PATCH',
-                                                //success: function(data) {
-                                                //},
-                                                //error: function(xhr, ajaxOptions, thrownError) {
-                                                  //alert('Failed:  '+ thrownError+xhr.responseText + '   ' + xhr.status);
-                                                //}
-                                              //});
+                                              $.ajax({
+                                                url: urlmaterial,
+                                                data: JSON.stringify(materialDeliveryData), //ur data to be sent to server
+                                                contentType: 'application/json',
+                                                dataType: 'json',
+                                                type: 'PATCH',
+                                                success: function(data) {
+                                                },
+                                                error: function(xhr, ajaxOptions, thrownError) {
+                                                  alert('Failed:  '+ thrownError+xhr.responseText + '   ' + xhr.status);
+                                                }
+                                              });
                                             }
 
                                           </script>
