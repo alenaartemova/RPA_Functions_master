@@ -302,7 +302,7 @@ namespace rpa_functions.rpa_pc243
                                                           });
                                                           disableSubmitAll();
 
-                                                          makehttp(id, true);
+                                                          makehttp(id, false);
                                                         } else {
                                                           // Not valid date, make user correct it
                                                           $('#deliverydate_' + id).css({
@@ -341,6 +341,7 @@ namespace rpa_functions.rpa_pc243
                                                     'color': 'black'
                                                   });
                                                   disableSubmit(id);
+                                                  makehttp(id, false);
 
                                                 } else {
                                                   // Not valid date, make user correct it
